@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10131d">
+  <title>Guess Battle — Multiplayer</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Guess Battle home">
+        <span class="brand-mark">GB</span>
+        <span>GUESS<span class="brand-accent">BATTLE</span></span>
+      </a>
+      <span class="online-pill"><span class="online-dot"></span> REAL-TIME DUEL</span>
+    </header>
+
+    <section id="lobby" class="view">
+      <div class="hero">
+        <p class="eyebrow">TWO PLAYERS. TWO SECRET NUMBERS.</p>
+        <h1>Think fast.<br><span>Guess faster.</span></h1>
+        <p class="hero-copy">Pilih angka rahasia, tantang temanmu, dan jadilah pemain pertama yang menebak dengan benar.</p>
+      </div>
+
+      <div class="lobby-grid">
+        <form id="create-form" class="panel">
+          <div class="panel-icon">＋</div>
+          <h2>Buat room</h2>
+          <p>Buat arena baru lalu bagikan kode room kepada temanmu.</p>
+          <label for="create-name">Nama kamu</label>
+          <input id="create-name" maxlength="18" placeholder="Contoh: Thoriq" required autocomplete="nickname">
+          <button class="button button-primary" type="submit">Buat room <span>→</span></button>
+        </form>
+
+        <form id="join-form" class="panel">
+          <div class="panel-icon panel-icon-purple">⌁</div>
+          <h2>Gabung room</h2>
+          <p>Sudah punya kode? Masukkan kode room dari temanmu.</p>
+          <label for="join-name">Nama kamu</label>
+          <input id="join-name" maxlength="18" placeholder="Nama pemain" required autocomplete="nickname">
+          <label for="room-code">Kode room</label>
+          <input id="room-code" maxlength="5" placeholder="ABCDE" required autocapitalize="characters" class="room-input">
+          <button class="button button-secondary" type="submit">Gabung room <span>→</span></button>
+        </form>
+      </div>
+      <p class="fine-print">Angka rahasia hanya diproses di server. Jangan bagikan angka rahasiamu kepada lawan.</p>
+    </section>
+
+    <section id="game" class="view hidden">
+      <div class="game-heading">
+        <div>
+          <p class="eyebrow">PRIVATE BATTLE ROOM</p>
+          <h1>Battle <span>arena</span></h1>
+        </div>
+        <div class="room-chip">ROOM <strong id="room-code-display">-----</strong>
+          <button id="copy-room" class="copy-button" type="button" aria-label="Salin kode room" title="Salin kode room">▣</button>
+        </div>
+      </div>
+
+      <div class="status-banner" id="status-banner" role="status">Menghubungkan...</div>
+
+      <div class="players-grid">
+        <article class="player-card">
+          <div class="player-card-top">
+            <span class="player-avatar avatar-you">YOU</span>
+            <span class="player-tag">PLAYER 1</span>
+          </div>
+          <h2 id="you-name">Kamu</h2>
+          <p id="you-status" class="player-status">Menunggu...</p>
+          <div class="stat-row"><span>Total tebakan</span><strong id="you-guesses">0</strong></div>
+        </article>
+        <article class="player-card opponent-card">
+          <div class="player-card-top">
+            <span class="player-avatar avatar-opponent">VS</span>
+            <span class="player-tag">OPPONENT</span>
+          </div>
+          <h2 id="opponent-name">Menunggu lawan</h2>
+          <p id="opponent-status" class="player-status">Belum bergabung</p>
+          <div class="stat-row"><span>Total tebakan lawan</span><strong id="opponent-guesses">0</strong></div>
+        </article>
+      </div>
+
+      <section id="choose-panel" class="panel game-panel">
+        <p class="eyebrow">STEP 01 / SECRET NUMBER</p>
+        <h2>Pilih angka rahasiamu</h2>
+        <p>Angka ini akan ditebak lawan. Pilih bilangan bulat dari <strong>1 sampai 100</strong>. Angka tidak akan ditampilkan ke lawan.</p>
+        <form id="secret-form" class="inline-form">
+          <input id="secret-number" type="number" min="1" max="100" step="1" placeholder="1–100" required>
+          <button class="button button-primary" type="submit">Kunci angka</button>
+        </form>
+        <p class="field-note" id="secret-note">Kamu hanya bisa memilih sekali setiap ronde.</p>
+      </section>
+
+      <section id="guess-panel" class="panel game-panel hidden">
+        <p class="eyebrow">STEP 02 / GUESS YOUR OPPONENT</p>
+        <h2>Tebak angka lawan</h2>
+        <p>Kesempatan tidak terbatas. Gunakan petunjuk untuk menemukan angka lawan secepat mungkin.</p>
+        <form id="guess-form" class="inline-form">
+          <input id="guess-number" type="number" min="1" max="100" step="1" placeholder="Masukkan tebakan" required>
+          <button id="guess-button" class="button button-primary" type="submit">Tebak angka</button>
+        </form>
+        <div id="feedback" class="feedback" role="status">Petunjuk akan muncul di sini.</div>
+        <div class="history-wrap">
+          <h3>Riwayat tebakanmu</h3>
+          <ul id="guess-history" class="guess-history"></ul>
+        </div>
+      </section>
+
+      <section id="result-panel" class="panel result-panel hidden" aria-live="polite">
+        <div class="trophy">✦</div>
+        <p class="eyebrow">BATTLE RESULT</p>
+        <h2 id="result-title">Game selesai</h2>
+        <p id="result-copy"></p>
+        <button id="new-game" class="button button-primary" type="button">Kembali ke lobby</button>
+      </section>
+
+      <div class="bottom-actions">
+        <button id="leave-room" class="text-button" type="button">Keluar dari room</button>
+      </div>
+    </section>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <footer>GUESS BATTLE <span>•</span> Built for friendly competition</footer>
+  </main>
+  <script src="/static/script.js"></script>
+</body>
+</html>
