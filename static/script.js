@@ -52,12 +52,21 @@ function connectAndSend(initialMessage) {
     socket.close();
   }
 
-  const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-  socket = new WebSocket(`${protocol}//${window.location.host}/ws`);
+const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+socket = new WebSocket(`${protocol}//${window.location.host}/ws`);
 
-  socket.addEventListener("open", () => {
-    socket.send(JSON.stringify(initialMessage));
-  });
+socket.addEventListener("open", () => {
+  console.log("WebSocket berhasil terhubung!");
+  socket.send(JSON.stringify(initialMessage));
+});
+
+socket.addEventListener("error", (event) => {
+  console.error("WebSocket gagal terhubung:", event);
+});
+
+socket.addEventListener("close", (event) => {
+  console.log("WebSocket ditutup:", event.code, event.reason);
+});
 
   socket.addEventListener("message", (event) => {
     let message;
